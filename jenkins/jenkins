@@ -8,7 +8,7 @@ pipeline {
         }
         stage('Build') {
             steps {
-                sh 'docker build -t DEPI-APP .'
+                sh 'docker build -t depi-app .'
             }
         }
         stage('Test') {
@@ -18,7 +18,7 @@ pipeline {
         }
         stage('Push to Docker Hub') {
             steps {
-                sh 'docker push andrewbassily0/DEPI-APP:latest'
+                sh 'docker push andrewbassily0/depi-app:latest'
             }
         }
     }
