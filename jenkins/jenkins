@@ -1,0 +1,67 @@
+pipeline {
+    agent any
+
+    environment {
+        DOCKER_CREDENTIALS_ID = 'dockerhub-credentials'  // DockerHub credentials stored in Jenkins
+        DOCKER_IMAGE = "your-dockerhub-username/flask-infinite-gpt-app"
+        RAPIDAPI_KEY = credentials('rapidapi-key') // Load RapidAPI key from Jenkins credentials
+    }
+
+    stages {
+        stage('Checkout Code') {
+            steps {
+                // Clone the repository
+                git url: 'https://github.com/andrewbassily0/DEPI-ASK.git', branch: 'main'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    // Build the Docker image
+                    sh 'docker build -t ${DOCKER_IMAGE}:${env.BUILD_ID} .'
+                }
+            }
+        }
+
+        stage('Run Unit Tests') {
+            steps {
+                script {
+                    // Run unit tests inside a Docker container
+                    sh '''
+                    docker run --rm \
+                    -e RAPIDAPI_KEY=${RAPIDAPI_KEY} \
+                    ${DOCKER_IMAGE}:${env.BUILD_ID} \
+                    pytest tests/
+                    '''
+                }
+            }
+        }
+
+        stage('Push Docker Image to Registry') {
+            steps {
+                script {
+                    // Log in to DockerHub
+                    withCredentials([usernamePassword(credentialsId: DOCKER_CREDENTIALS_ID, passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
+                        sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
+                    }
+                    // Push the image to DockerHub
+                    sh 'docker push ${DOCKER_IMAGE}:${env.BUILD_ID}'
+                }
+            }
+        }
+
+    }
+
+    post {
+        always {
+            cleanWs() // Clean workspace after the pipeline finishes
+        }
+        success {
+            echo "Build succeeded!"
+        }
+        failure {
+            echo "Build failed!"
+        }
+    }
+}
