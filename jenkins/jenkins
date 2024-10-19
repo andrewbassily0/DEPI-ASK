@@ -1,67 +1,25 @@
 pipeline {
     agent any
-
-    environment {
-        DOCKER_CREDENTIALS_ID = 'dockerhub-credentials'  // DockerHub credentials stored in Jenkins
-        DOCKER_IMAGE = "andrewbassily0/DEPI-APP"
-        RAPIDAPI_KEY = credentials('rapidapi-key') // Load RapidAPI key from Jenkins credentials
-    }
-
     stages {
-        stage('Checkout Code') {
+        stage('Checkout') {
             steps {
-            
-                git url: 'https://github.com/andrewbassily0/DEPI-ASK.git', branch: 'main'
+                git branch: 'main', url: 'https://github.com/andrewbassily0/DEPI-ASK'
             }
         }
-
-        stage('Build Docker Image') {
+        stage('Build') {
             steps {
-                script {
-                    
-                    sh 'docker build -t ${DOCKER_IMAGE}:${env.BUILD_ID} .'
-                }
+                sh 'docker build -t DEPI-APP .'
             }
         }
-
-        stage('Run Unit Tests') {
+        stage('Test') {
             steps {
-                script {
-                    
-                    sh '''
-                    docker run --rm \
-                    -e RAPIDAPI_KEY=${RAPIDAPI_KEY} \
-                    ${DOCKER_IMAGE}:${env.BUILD_ID} \
-                    pytest tests/
-                    '''
-                }
+                sh 'python -m unittest discover tests' // Replace with your test command
             }
         }
-
-        stage('Push Docker Image to Registry') {
+        stage('Push to Docker Hub') {
             steps {
-                script {
-                
-                    withCredentials([usernamePassword(credentialsId: DOCKER_CREDENTIALS_ID, passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
-                        sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
-                    }
-                    
-                    sh 'docker push ${DOCKER_IMAGE}:${env.BUILD_ID}'
-                }
+                sh 'docker push andrewbassily0/DEPI-APP:latest'
             }
-        }
-
-    }
-
-    post {
-        always {
-            cleanWs() 
-        }
-        success {
-            echo "Build succeeded!"
-        }
-        failure {
-            echo "Build failed!"
         }
     }
 }
