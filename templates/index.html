@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Depi GPT</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>ASK DEPI GPT</h1>
+        <textarea id="userInput" placeholder="Type your question..."></textarea>
+        <button id="askButton">Ask</button>
+        <div id="responseContainer"></div>
+    </div>
+    <script>
+        $(document).ready(function(){
+            $("#askButton").click(function(){
+                let userInput = $("#userInput").val();
+                console.log("Sending input:", userInput); // Log input for debugging
+                $.ajax({
+                    url: "/ask",
+                    type: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify({ input: userInput }),
+                    success: function(response) {
+                        $("#responseContainer").html(response.msg);
+                        $("#userInput").val('');  
+                    },
+                    error: function() {
+                        $("#responseContainer").text("Error getting response");
+                    }
+                });
+            });
+        });
+    </script>
+    
+</body>
+</html>
