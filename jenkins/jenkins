@@ -29,7 +29,12 @@ pipeline {
                 sh 'PYTHONPATH=$WORKSPACE pytest tests/' 
             }
         }
-
+        stage('Check Docker') {
+            steps {
+                
+                sh 'docker --version'
+            }
+        }
         stage('Build Docker Image') {
             steps {
                 sh 'docker build -t depiapp'
