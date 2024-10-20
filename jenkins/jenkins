@@ -1,15 +1,15 @@
 pipeline {
-     
     agent {
         docker {
             image 'python:3.9'
+            args '-u root:root' 
         }
     }
-    
+
     environment {
         DOCKERHUB_CREDENTIALS = credentials('dockerhub') 
         SLACK_CREDENTIALS = credentials('Slack-Token') 
-        DOCKER_IMAGE = 'depiiapp'
+        DOCKER_IMAGE = 'depiapp'
         PATH = "/usr/bin:/usr/local/bin:${PATH}"
     }
 
@@ -31,23 +31,26 @@ pipeline {
                 sh 'PYTHONPATH=$WORKSPACE pytest tests/' 
             }
         }
+
         stage('Check Docker') {
             steps {
-                
                 sh 'echo $PATH'
                 sh 'which docker || echo "Docker not found in PATH"'
             }
         }
+
         stage('Build Docker Image') {
             steps {
-                sh ' docker build -t depiapp .'
-                }
+                sh 'docker build -t ${DOCKER_IMAGE}:${env.BUILD_NUMBER} .'
             }
         }
 
         stage('Push to Docker Hub') {
             steps {
-                sh ' docker push andrewbassily0/depiapp:v1.0'
+                withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                    sh 'echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin'
+                    sh 'docker push ${DOCKER_IMAGE}:${env.BUILD_NUMBER}'
+                }
             }
         }
     }
@@ -58,18 +61,18 @@ pipeline {
         }
 
         success {
-            slackSend (
+            slackSend(
                 channel: 'devops',
                 message: "Build SUCCESS: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' succeeded. View build details: ${env.BUILD_URL}",
                 tokenCredentialId: 'Slack-Token'
             )
         }
         failure {
-            slackSend (
+            slackSend(
                 channel: 'devops',
                 message: "Build FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' failed. View build details: ${env.BUILD_URL}",
                 tokenCredentialId: 'Slack-Token'
             )
         }
     }
-
+}
