@@ -9,7 +9,7 @@ pipeline {
         DOCKERHUB_CREDENTIALS = credentials('dockerhub') 
         SLACK_CREDENTIALS = credentials('Slack-Token') 
         DOCKER_IMAGE = 'depiiapp'
-        PATH = "/usr/local/bin:${PATH}"
+        PATH = "/usr/bin/docker:${PATH}"
 
     }
 
@@ -58,7 +58,7 @@ pipeline {
         always {
             cleanWs()
         }
-        
+
         success {
             slackSend (
                 channel: 'devops',
