@@ -43,14 +43,20 @@ pipeline {
 
         stage('Check Docker') {
             steps {
-                sh 'echo $PATH'
-                sh 'which docker || echo "Docker not found in PATH"'
+                sh '''
+                    #!/bin/bash
+                    echo $PATH
+                    which docker || echo "Docker not found in PATH" 
+                '''
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t ${DOCKER_IMAGE}:${env.BUILD_NUMBER} .'
+                sh '''
+                    #!/bin/bash
+                docker build -t ${DOCKER_IMAGE}:${env.BUILD_NUMBER} .
+                '''
             }
         }
 
