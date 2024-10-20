@@ -1,5 +1,9 @@
 pipeline {
-    agent any
+    agent agent {
+        docker {
+            image 'python:3.9'
+        }
+    }
     
     environment {
         DOCKERHUB_CREDENTIALS = credentials('dockerhub') 
@@ -16,7 +20,7 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                sh '/usr/bin/pip install -r requirements.txt' 
+                sh 'pip install -r requirements.txt' 
             }
         }
 
