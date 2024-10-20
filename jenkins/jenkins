@@ -9,7 +9,7 @@ pipeline {
         DOCKERHUB_CREDENTIALS = credentials('dockerhub') 
         SLACK_CREDENTIALS = credentials('Slack-Token') 
         DOCKER_IMAGE = 'depiiapp'
-        PATH = "/usr/bin:${PATH}"
+        PATH = "/usr/bin:/usr/local/bin:${PATH}"
 
     }
 
@@ -40,9 +40,7 @@ pipeline {
         }
         stage('Build Docker Image') {
             steps {
-                script {
-                    
-                    docker.build("depiapp:${env.BUILD_NUMBER}")
+                sh ' docker build -t depiapp .'
                 }
             }
         }
