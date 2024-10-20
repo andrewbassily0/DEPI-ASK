@@ -10,13 +10,14 @@ pipeline {
     stages {
         stage('Clone Repository') {
             steps {
+                echo 
                 git branch: 'main', url: 'https://github.com/andrewbassily0/DEPI-ASK'
             }
         }
 
         stage('Install Dependencies') {
             steps {
-                sh 'pip install -r requirements.txt' 
+                sh 'pip3 install -r requirements.txt' 
             }
         }
 
