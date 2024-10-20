@@ -32,7 +32,8 @@ pipeline {
         stage('Check Docker') {
             steps {
                 
-                sh 'docker --version'
+                sh 'echo $PATH'
+                sh 'which docker || echo "Docker not found in PATH"'
             }
         }
         stage('Build Docker Image') {
