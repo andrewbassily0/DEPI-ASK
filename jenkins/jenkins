@@ -1,8 +1,6 @@
 pipeline {
-    agent any {
-       
-    }
-
+    agent any 
+    
     environment {
         DOCKERHUB_CREDENTIALS = credentials('dockerhub') 
         SLACK_CREDENTIALS = credentials('Slack-Token') 
