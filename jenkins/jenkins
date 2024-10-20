@@ -9,7 +9,7 @@ pipeline {
         DOCKERHUB_CREDENTIALS = credentials('dockerhub') 
         SLACK_CREDENTIALS = credentials('Slack-Token') 
         DOCKER_IMAGE = 'depiiapp'
-        PATH = "/usr/bin/docker:${PATH}"
+        PATH = "/usr/bin:${PATH}"
 
     }
 
