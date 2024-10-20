@@ -1,25 +1,58 @@
 pipeline {
     agent any
+    
+    environment {
+        DOCKERHUB_CREDENTIALS = credentials('dockerhub') 
+        SLACK_CREDENTIALS = credentials('Slack-Token') 
+        DOCKER_IMAGE = 'depiiapp'
+    }
+
     stages {
-        stage('Checkout') {
+        stage('Clone Repository') {
             steps {
-                git branch: 'main', url: 'https://github.com/andrewbassily0/DEPI-ASK'
+                git branch: 'main', url: 'https://github.com/your-username/your-app-repo.git'
             }
         }
-        stage('Build') {
+
+        stage('Install Dependencies') {
             steps {
-                sh 'docker build -t depi-app .'
+                sh 'pip install -r requirements.txt' 
             }
         }
-        stage('Test') {
+
+        stage('Run Tests') {
             steps {
-                sh 'python -m unittest discover tests' // Replace with your test command
+                sh 'pytest tests/' 
             }
         }
+
+        stage('Build Docker Image') {
+            steps {
+                sh 'docker build -t depiapp'
+            }
+        }
+
         stage('Push to Docker Hub') {
             steps {
-                sh 'docker push andrewbassily0/depi-app:latest'
+                sh ' docker push andrewbassily0/depiapp:v1.0'
             }
+        }
+    }
+
+    post {
+        success {
+            slackSend (
+                channel: 'devops',
+                message: "Build SUCCESS: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' succeeded. View build details: ${env.BUILD_URL}",
+                tokenCredentialId: 'Slack-Token'
+            )
+        }
+        failure {
+            slackSend (
+                channel: 'devops',
+                message: "Build FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' failed. View build details: ${env.BUILD_URL}",
+                tokenCredentialId: 'Slack-Token'
+            )
         }
     }
 }
