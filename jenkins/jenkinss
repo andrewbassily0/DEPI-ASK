@@ -2,6 +2,8 @@ pipeline {
     agent any
     environment {
         DOCKER_IMAGE = 'andrewbassily0/depiask'
+        SONARQUBE_SCANNER_HOME = tool 'SonarQubeScanner'  // Assuming you've configured SonarQube Scanner in Jenkins' global tool configuration
+
     }
     stages {
         stage('Checkout') {
@@ -9,21 +11,17 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/andrewbassily0/DEPI-ASK'
             }
         }
+        stages {
         stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv('SonarQube') {
-                    script {
-                        def sonarToken = credentials('sonar_token')
-                        sh '''
-                            sonar-scanner \
-                            -Dsonar.projectKey=DEPI-ASK \
-                            -Dsonar.sources=. \
-                            -Dsonar.login=${sonarToken}
-                        '''
+                script {
+                    withSonarQubeEnv('SonarQube') { // Assuming 'SonarQube' is the name of your SonarQube server configuration in Jenkins
+                        sh "${SONARQUBE_SCANNER_HOME}/bin/sonar-scanner -Dsonar.projectKey=DEPI-ASK -Dsonar.sources=."
                     }
                 }
             }
-        }   
+        }
+    }
         stage('Quality Gate') {
             steps {
                 timeout(time: 1, unit: 'MINUTES') {
