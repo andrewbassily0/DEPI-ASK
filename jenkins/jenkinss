@@ -28,9 +28,12 @@ pipeline {
         stage('Deploy with Ansible') {
             steps {
                 ansiblePlaybook(
-                    playbook: 'deploy/playbook.yml',
-                    inventory: 'deploy/hosts.ini',
-                    credentialsId: 'ansible_ssh_key'
+                    playbook: 'ansible/playbook.yml',
+                    inventory: 'ansible/hosts.ini',
+                    credentialsId: 'ansible'
+                    extraVars: [
+                jenkins_build_number: "${BUILD_NUMBER}"
+            ]
                 )
             }
         }
