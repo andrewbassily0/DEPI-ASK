@@ -12,7 +12,7 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('SonarQube') {  
-
+                    def sonarToken = credentials('Sonar_Token')
                     sh '''
                        export PATH=$PATH:/opt/sonar-scanner/bin
                        sonar-scanner
