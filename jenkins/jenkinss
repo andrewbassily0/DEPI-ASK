@@ -9,9 +9,8 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/andrewbassily0/DEPI-ASK'
             }
         }
-        stages {
-            stage('SonarQube Analysis') {
-              steps {
+        stage('SonarQube Analysis') {
+            steps {
                 withSonarQubeEnv('SonarQube') {
                     script {
                         def sonarToken = credentials('sonar_token')
@@ -19,9 +18,8 @@ pipeline {
                             sonar-scanner \
                             -Dsonar.projectKey=DEPI-ASK \
                             -Dsonar.sources=. \
-                            -Dsonar.login=${SonarToken}
+                            -Dsonar.login=${sonarToken}
                         '''
-                        }
                     }
                 }
             }
