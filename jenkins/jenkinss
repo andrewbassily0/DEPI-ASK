@@ -10,16 +10,9 @@ pipeline {
             }
         }
         stage('SonarQube Analysis') {
-            steps {
-                withSonarQubeEnv('SonarQube') {
-                    script {
-                        def sonarToken = credentials('Sonar_Token')
-                        sh '''
-                            sonar-scanner \
-                            -Dsonar.login=${sonarToken}
-                        '''
-                    }
-                }
+                def scannerHome = tool 'SonarScanner';
+                withSonarQubeEnv() {
+                sh "${scannerHome}/bin/sonar-scanner"
             }
         }
         stage('Quality Gate') {
