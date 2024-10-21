@@ -57,7 +57,9 @@ pipeline {
     }
     post {
         always {
-            cleanWs()
+            node {
+                cleanWs()
+            }
         }
         success {
             slackSend(
