@@ -38,7 +38,7 @@
       apt:
         name: docker-ce
         state: present
-        
+
     - name: Pull Docker image
       docker_image:
         name: your-dockerhub-username/your-python-app
