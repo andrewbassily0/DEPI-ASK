@@ -1,10 +1,9 @@
----
 - name: Fix repository issues and install Docker
   hosts: vms
   become: yes
 
   tasks:
-    - name: Remove winehq and playonlinux repositories
+    - name: Remove winehq and playonlinux repositories (optional)
       lineinfile:
         path: "/etc/apt/sources.list"
         regexp: '^(deb.*winehq|deb.*playonlinux)'
@@ -16,15 +15,28 @@
         state: directory
         mode: '0755'
 
-    - name: Add Docker GPG key to keyrings
+    - name: Add Docker GPG key
       get_url:
         url: https://download.docker.com/linux/ubuntu/gpg
         dest: /etc/apt/keyrings/docker.gpg
+        mode: '0644'
 
     - name: Add Docker repository using keyring
       apt_repository:
         repo: "deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
         state: present
+
+    - name: Add WineHQ GPG key (if required)
+      get_url:
+        url: https://dl.winehq.org/wine-builds/winehq.key
+        dest: /etc/apt/keyrings/winehq.gpg
+      when: "'winehq' in inventory_hostname"
+
+    - name: Add WineHQ repository using keyring (if required)
+      apt_repository:
+        repo: "deb [signed-by=/etc/apt/keyrings/winehq.gpg] https://dl.winehq.org/wine-builds/ubuntu/ {{ ansible_distribution_release }} main"
+        state: present
+      when: "'winehq' in inventory_hostname"
 
     - name: Update apt cache
       apt:
