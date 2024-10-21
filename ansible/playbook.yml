@@ -11,7 +11,10 @@
 
     - name: Add Docker GPG key manually
       command: >
-        apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 7EA0A9C3F273FCD8
+        sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 76F1A20FF987672F
+    
+    - name: apt Update
+
 
     - name: Remove playonlinux repository
       lineinfile:
