@@ -1,0 +1,57 @@
+pipeline {
+    agent any
+    environment {
+        DOCKER_IMAGE = 'andrewbassily0/depiask'
+    }
+    stages {
+        stage('Checkout') {
+            steps {
+                git 'https://github.com/andrewbassily0/DEPI-ASK'
+            }
+        }
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    dockerImage = docker.build("${DOCKER_IMAGE}:${BUILD_NUMBER}")
+                }
+            }
+        }
+        stage('Push Docker Image') {
+            steps {
+                script {
+                    docker.withRegistry('', 'dockerhub_credentials') {
+                        dockerImage.push()
+                    }
+                }
+            }
+        }
+        stage('Deploy with Ansible') {
+            steps {
+                ansiblePlaybook(
+                    playbook: 'deploy/playbook.yml',
+                    inventory: 'deploy/hosts.ini',
+                    credentialsId: 'ansible_ssh_key'
+                )
+            }
+        }
+    }
+    post {
+        always {
+            cleanWs()
+        }
+        success {
+            slackSend(
+                channel: 'devops',
+                message: "Build SUCCESS: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' succeeded. View build details: ${env.BUILD_URL}",
+                tokenCredentialId: 'Slack-Token'
+            )
+        }
+        failure {
+            slackSend(
+                channel: 'devops',
+                message: "Build FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' failed. View build details: ${env.BUILD_URL}",
+                tokenCredentialId: 'Slack-Token'
+            )
+        }
+    }
+}
