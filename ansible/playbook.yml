@@ -33,14 +33,14 @@
 
     - name: Pull Docker image
       docker_image:
-        name: your-dockerhub-username/your-python-app
+        name: andrewbassily0/depiask
         tag: "{{ jenkins_build_number }}"
         source: pull
 
     - name: Run Docker container
       docker_container:
-        name: python_app
-        image: your-dockerhub-username/your-python-app:{{ jenkins_build_number }}
+        name: depiask
+        image: andrewbassily0/depiask:{{ jenkins_build_number }}
         state: started
         ports:
           - "5000:5000"
