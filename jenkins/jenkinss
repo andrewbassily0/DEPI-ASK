@@ -3,7 +3,6 @@ pipeline {
     environment {
         DOCKER_IMAGE = 'andrewbassily0/depiask'
         SONARQUBE_SCANNER_HOME = tool 'SonarQubeScanner'  // Assuming you've configured SonarQube Scanner in Jenkins' global tool configuration
-
     }
     stages {
         stage('Checkout') {
@@ -11,7 +10,6 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/andrewbassily0/DEPI-ASK'
             }
         }
-        stages {
         stage('SonarQube Analysis') {
             steps {
                 script {
@@ -21,7 +19,6 @@ pipeline {
                 }
             }
         }
-    }
         stage('Quality Gate') {
             steps {
                 timeout(time: 1, unit: 'MINUTES') {
