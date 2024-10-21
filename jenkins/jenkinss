@@ -6,7 +6,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/andrewbassily0/DEPI-ASK'
+                git branch: 'main', url: 'https://github.com/andrewbassily0/DEPI-ASK'
             }
         }
         stage('Build Docker Image') {
