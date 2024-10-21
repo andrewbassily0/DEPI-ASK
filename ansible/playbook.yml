@@ -1,0 +1,24 @@
+---
+- hosts: vms
+  become: yes
+  tasks:
+    - name: Install Docker
+      apt:
+        name: docker.io
+        state: present
+        update_cache: yes
+
+    - name: Pull Docker image
+      docker_image:
+        name: your-dockerhub-username/your-python-app
+        tag: "{{ jenkins_build_number }}"
+        source: pull
+
+    - name: Run Docker container
+      docker_container:
+        name: python_app
+        image: your-dockerhub-username/your-python-app:{{ jenkins_build_number }}
+        state: started
+        ports:
+          - "5000:5000"
+        restart_policy: always
