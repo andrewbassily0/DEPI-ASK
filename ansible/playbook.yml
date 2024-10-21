@@ -1,42 +1,34 @@
+---
 - name: Fix repository issues and install Docker
   hosts: vms
   become: yes
 
   tasks:
-    - name: Remove winehq and playonlinux repositories (optional)
+    - name: Install required packages for adding keys
+      apt:
+        name: gnupg
+        state: present
+
+    - name: Add Docker GPG key manually
+      command: >
+        apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 7EA0A9C3F273FCD8
+
+    - name: Remove playonlinux repository
       lineinfile:
         path: "/etc/apt/sources.list"
-        regexp: '^(deb.*winehq|deb.*playonlinux)'
+        regexp: '^(deb.*playonlinux)'
         state: absent
 
-    - name: Create keyrings directory
-      file:
-        path: /etc/apt/keyrings
-        state: directory
-        mode: '0755'
+    - name: Remove winehq repository
+      lineinfile:
+        path: "/etc/apt/sources.list"
+        regexp: '^(deb.*winehq)'
+        state: absent
 
-    - name: Add Docker GPG key
-      get_url:
-        url: https://download.docker.com/linux/ubuntu/gpg
-        dest: /etc/apt/keyrings/docker.gpg
-        mode: '0644'
-
-    - name: Add Docker repository using keyring
+    - name: Add Docker repository
       apt_repository:
-        repo: "deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+        repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
         state: present
-
-    - name: Add WineHQ GPG key (if required)
-      get_url:
-        url: https://dl.winehq.org/wine-builds/winehq.key
-        dest: /etc/apt/keyrings/winehq.gpg
-      when: "'winehq' in inventory_hostname"
-
-    - name: Add WineHQ repository using keyring (if required)
-      apt_repository:
-        repo: "deb [signed-by=/etc/apt/keyrings/winehq.gpg] https://dl.winehq.org/wine-builds/ubuntu/ {{ ansible_distribution_release }} main"
-        state: present
-      when: "'winehq' in inventory_hostname"
 
     - name: Update apt cache
       apt:
@@ -46,7 +38,7 @@
       apt:
         name: docker-ce
         state: present
-
+        
     - name: Pull Docker image
       docker_image:
         name: your-dockerhub-username/your-python-app
