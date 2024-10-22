@@ -1,70 +1,117 @@
-# DEPI-ASK
+# 🧠 ChatGPT Integration via RapidAPI - Flask App 🚀
 
-## Overview
+Welcome to the **ChatGPT Integration Project**! This project demonstrates how to create an interactive AI-powered chatbot using **Flask**, **RapidAPI**, and **ChatGPT**. The application is Dockerized and deployed seamlessly to a server using **Ansible** for configuration and automation.
 
-This project demonstrates how to Dockerize a Python application, set up a Jenkins pipeline to automate the Docker build process, and use Ansible for deployment on a local VM. 
+## 🌟 Features
 
-## Table of Contents
+- **AI Chatbot** powered by OpenAI's ChatGPT via RapidAPI.
+- **Modern Architecture**: Flask web framework for building scalable APIs.
+- **Containerization**: Fully Dockerized for easy deployment and portability.
+- **Automation**: Ansible scripts used to configure and deploy the app to a server.
+- **Creative UI**: Clean, responsive, and modern frontend design with dark mode.
 
-- Prerequisites
-- Project Structure
-- Dockerizing the Python App
-- Jenkins Pipeline Setup 
-- Ansible Configuration
-- Usage
-- Troubleshooting
-- License
+## 🛠️ Tech Stack
 
-## Prerequisites
+- **Flask**: Backend framework for Python web apps.
+- **RapidAPI**: Integration with OpenAI’s ChatGPT for natural language processing.
+- **Docker**: Containerization to ensure consistent environments across platforms.
+- **Ansible**: Configuration management and deployment automation.
+- **Nginx**: Reverse proxy for handling web traffic and managing requests.
+- **Gunicorn**: Python WSGI HTTP Server to serve the app in production.
 
-Before you begin, ensure you have met the following requirements:
+## 🏗️ Project Structure
 
-- Docker installed on your local machine and Jenkins server.
-- Jenkins installed with the required plugins, including Docker Pipeline, Ansible Plugin, and Git Plugin.
-- Ansible installed on the Jenkins server.
-- Access to a local VM for deployment.
+```
+.
+├── ansible/              # Ansible playbooks for server config and deployment
+        ├── hosts.ini     # Server Host
+        ├── playbook.yml  # Playbook.yml
+├── jenkins/              # Jenkins pipeline
+        ├── jenkinss      # Pipeline script  
+├── static                # Frontend Folder 
+        ├── styles.css    # css, js
+├── templates             # HTML templates
+        ├── test
+├── test                  # Test app folder
+    ├── test.py
+├── Dockerfile            # Docker instructions
+├── requirements.txt      # Python dependencies
+├── README.md             # Project documentation
+└── app.py                # Entry point to start the Flask app
 
-## Project Structure
+```
 
-The project has the following structure:
+## 🚀 Quick Start
 
-- **deploy/**: Contains the Ansible playbook and inventory files for deployment.
-- **app.py**: The main application file.
-- **requirements.txt**: Check Requirements.txt
-- **Dockerfile**: Defines how to build the Docker image.
-- **Jenkinsfile**: Specifies the Jenkins pipeline for automated builds and deployment.
+### 1. Clone the repository
 
-## Dockerizing the Python App
+```bash
+git https://github.com/andrewbassily0/DEPI-ASK
+cd  DEPI-ASK
+```
 
-The project includes a Dockerfile that describes how to create a Docker image for the Python application. It sets up the necessary environment, installs dependencies, and specifies how to run the application.
+### 2. Set up environment variables
 
-## Jenkins Pipeline Setup
+Create a `.env` file and add your API key from RapidAPI:
 
-The project uses a Jenkins pipeline to automate the following tasks:
+```bash
+RAPIDAPI_KEY=your_rapidapi_key
+```
 
-1. Checkout the latest code from the Git repository.
-2. Build the Docker image using the provided Dockerfile.
-3. Push the Docker image to a Docker registry (e.g., Docker Hub).
-4. Use Ansible to deploy the application to a local VM.
+### 3. Build and run the Docker container
 
-Ensure that Jenkins is configured to use Docker and has the necessary credentials for both the Docker registry and SSH access to the VM.
+```bash
+docker build -t DEPI-ASK .
+docker run -p 5000:5000 DEPI-ASK
+```
 
-## Ansible Configuration
+### 4. Deploy using Ansible
 
-The Ansible setup consists of an inventory file that defines the target VM and a playbook that handles the installation of Docker and the deployment of the application. The playbook pulls the Docker image from the registry and runs it on the specified VM.
+Ensure you have Ansible installed and set up your server configuration:
 
-## Usage
+```bash
+ansible-playbook -i hosts playbook.yml
+```
 
-To use the project, trigger the Jenkins pipeline either manually or through a webhook from your Git repository. Once the pipeline runs successfully, the application will be deployed, and you can access it via the specified port on the VM.
+## 🌐 API Endpoints
 
-## Troubleshooting
+- `GET /` - Home page with the chatbot UI.
+- `POST /chat` - Endpoint for sending messages to ChatGPT via RapidAPI.
 
-If you encounter issues, consider the following:
+## 🐳 Docker Setup
 
-- Check for permission issues if Jenkins cannot run Docker commands.
-- Verify SSH connectivity and ensure the correct SSH key is being used for Ansible.
-- Ensure the Docker image is pushed to the Docker registry without errors.
+To build and run the app in a Docker container:
 
-## License
+```bash
+docker build -t DEPI-ASK
+```
 
-This project is licensed under the MIT License. See the LICENSE file for details.
+## ⚙️ Ansible Deployment
+
+Use the Ansible playbooks provided in the `ansible/` directory to automate server configuration and app deployment.
+
+```bash
+ansible-playbook -i hosts playbook.yml
+```
+
+## 🤖 ChatGPT Integration
+
+This application leverages **ChatGPT** through **RapidAPI** for intelligent responses based on user input. Check out the RapidAPI integration in the `views.py` file to see how the chatbot connects and processes messages.
+
+## 🖼️ Screenshots
+
+| Home Page | Chat Interface |
+| --------- | --------------- |
+| ![Home](docs/home.png) | ![Chat](docs/chat.png) |
+
+## 👨‍💻 Contributing
+
+Contributions are welcome! Feel free to submit pull requests or open issues to improve the project.
+
+## 📝 License
+
+This project is licensed under the MIT License.
+
+---
+
+This `README.md` covers your project's purpose, features, and instructions while maintaining a professional and creative touch. Let me know if you need any adjustments!
