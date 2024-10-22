@@ -102,9 +102,9 @@ This application leverages **ChatGPT** through **RapidAPI** for intelligent resp
 
 ## 🖼️ Screenshots
 
-| Home Page | Chat Interface |
-| --------- | --------------- |
-| ![Home](docs/home.png) | ![Chat](docs/chat.png) |
+| Home Page | 
+| --------- | 
+| ![Home](docs/home.png) | 
 
 ## 👨‍💻 Contributing
 
