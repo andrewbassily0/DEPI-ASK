@@ -18,6 +18,8 @@ Welcome to the **ChatGPT Integration Project**! This project demonstrates how to
 - **Ansible**: Configuration management and deployment automation.
 - **Nginx**: Reverse proxy for handling web traffic and managing requests.
 - **Gunicorn**: Python WSGI HTTP Server to serve the app in production.
+- **Jenkins**: Continuous integration and deployment with Slack notifications.
+
 
 ## 🏗️ Project Structure
 
