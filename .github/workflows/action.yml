@@ -28,12 +28,10 @@ jobs:
           docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/$REPOSITORY:$IMAGE_TAG .
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/$REPOSITORY:$IMAGE_TAG
         
-      - uses: actions/checkout@v4
       - name: Run ansible-lint
-        uses: ansible/ansible-lint@main
-        
+        uses: ansible/ansible-lint-action@main
         with:
           args: "-p --nocolor"
           setup_python: "true"
-          working_directory: "ansible/playbook.yml"
-       
+          working_directory: "ansible"  # Ensure this points to the folder, not the playbook file
+          
