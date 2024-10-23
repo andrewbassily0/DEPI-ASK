@@ -35,5 +35,5 @@ jobs:
         with:
           args: "-p --nocolor"
           setup_python: "true"
-          working_directory: "ansible/playbooks"
+          working_directory: "ansible/playbooks.yml"
        
