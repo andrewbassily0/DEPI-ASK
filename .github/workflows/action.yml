@@ -22,7 +22,6 @@ jobs:
 
       - name: Build and push Docker image
         env:
-          REPOSITORY: 
           IMAGE_TAG: latest
         run: |
           docker build -t ${{ secrets.DOCKERHUB_USERNAME }}:$IMAGE_TAG .
