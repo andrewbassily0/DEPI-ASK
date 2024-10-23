@@ -28,10 +28,14 @@ jobs:
           docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/$REPOSITORY:$IMAGE_TAG .
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/$REPOSITORY:$IMAGE_TAG
         
+      - name: Install Ansible collections
+        run: |
+          ansible-galaxy collection install -r requirements.yml
+
       - name: Run ansible-lint
         uses: ansible/ansible-lint-action@main
         with:
           args: "-p --nocolor"
           setup_python: "true"
-          working_directory: "ansible"  # Ensure this points to the folder, not the playbook file
-          
+          working_directory: "ansible"  
+          requirements_file: "ansible-requirements.txt"
