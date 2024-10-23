@@ -30,7 +30,7 @@ jobs:
         
       - name: Install Ansible collections
         run: |
-          ansible-galaxy collection install -r requirements.yml
+          ansible-galaxy collection install -r ansible/requirements.yml
 
       - name: Run ansible-lint
         uses: ansible/ansible-lint-action@main
@@ -38,4 +38,4 @@ jobs:
           args: "-p --nocolor"
           setup_python: "true"
           working_directory: "ansible"  
-          requirements_file: "ansible-requirements.txt"
+          requirements_file: "ansible/requirements.txt"
