@@ -1,49 +1,68 @@
-name: Build and Push Docker Image
+name: CI/CD Pipeline for DEPI-ASK
 
 on:
   push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+    branches:
+      - main
 
 jobs:
-  build-and-push:
+  build_and_deploy:
     runs-on: ubuntu-latest
+    env:
+      DOCKER_IMAGE: andrewbassily0/depiask
 
     steps:
+      # Step 1: Checkout the code
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v1
+      # Step 2: Set up Docker (build the image)
+      - name: Log in to DockerHub
+        uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and push Docker image
-        env:
-          REPOSITORY: test
-          IMAGE_TAG: latest
+      - name: Build Docker image
         run: |
-          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/$REPOSITORY:$IMAGE_TAG .
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/$REPOSITORY:$IMAGE_TAG
+          docker build -t $DOCKER_IMAGE:${{ github.run_number }} .
+          echo "Docker image built: $DOCKER_IMAGE:${{ github.run_number }}"
 
-        
-      - name: Install Python dependencies
+      # Step 3: Push Docker image to DockerHub
+      - name: Push Docker image to DockerHub
         run: |
-          python -m pip install --upgrade pip
-          pip install -r ansible/requirements.txt
+          docker push $DOCKER_IMAGE:${{ github.run_number }}
+          echo "Docker image pushed: $DOCKER_IMAGE:${{ github.run_number }}"
 
-      # Step 4: Install Ansible collections from requirements.yml
-      - name: Install Ansible collections
+      # Step 4: Deploy with Ansible
+      - name: Set up Ansible
         run: |
-          ansible-galaxy collection install -r ansible/requirements.yml
+          sudo apt-get update && sudo apt-get install -y ansible
 
-      # Step 5: Run ansible-lint
-      - name: Run ansible-lint
-        uses: ansible/ansible-lint-action@main
+      - name: Run Ansible Playbook
+        run: |
+          ansible-playbook -i ansible/hosts.ini ansible/playbook.yml --extra-vars "jenkins_build_number=${{ github.run_number }}"
+
+      # Step 5: Send Slack notifications
+      - name: Send Slack notification on success
+        if: success()
+        uses: slackapi/slack-github-action@v1.23.0
         with:
-          args: "-p --nocolor"
-          setup_python: "true"
-          working_directory: "ansible"  # Ensure this points to the folder, not the playbook file
-          requirements_file: "ansible-requirements.txt"
+          channel-id: 'devops'
+          text: "Build SUCCESS: Job '${{ github.job }} [${{ github.run_number }}]' succeeded. View build details: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_TOKEN }}
+
+      - name: Send Slack notification on failure
+        if: failure()
+        uses: slackapi/slack-github-action@v1.23.0
+        with:
+          channel-id: 'devops'
+          text: "Build FAILED: Job '${{ github.job }} [${{ github.run_number }}]' failed. View build details: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_TOKEN }}
+
+      # Step 6: Clean up workspace
+      - name: Cleanup workspace
+        run: |
+          sudo rm -rf *
