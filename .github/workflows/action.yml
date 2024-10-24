@@ -41,7 +41,7 @@ jobs:
 
       - name: Run Ansible Playbook
         run: |
-          ansible-playbook -i ansible/hosts.ini ansible/playbook.yml --extra-vars "jenkins_build_number=${{ github.run_number }}"
+          ansible-playbook -i ansible/hosts.ini ansible/playbooks.yml --extra-vars "jenkins_build_number=${{ github.run_number }}"
 
       # Step 5: Send Slack notifications
       - name: Send Slack notification on success
